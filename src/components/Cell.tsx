@@ -21,13 +21,13 @@ const useStyles = createUseStyles({
     },
   },
 });
-export const Cell = ({ hasDot }: ISquare) => {
+export const Cell = ({ hasStar }: ISquare) => {
   const classes = useStyles();
   let cell = () => {
     return (
       <Box
         className={`${
-          hasDot ? `${classes.cell} ${classes.star}` : classes.cell
+          hasStar ? `${classes.cell} ${classes.star}` : classes.cell
         }`}
       ></Box>
     );

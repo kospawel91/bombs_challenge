@@ -5,7 +5,7 @@ export const createBoard = (size: number, stars: number): ISquare[] => {
     for (let i = 0; i < size ** 2; i++) {
         squares.push({
             x: i,
-            hasDot: false,
+            hasStar: false,
         });
     }
 
@@ -13,7 +13,7 @@ export const createBoard = (size: number, stars: number): ISquare[] => {
         let randomIndex = Math.floor(Math.random() * size ** 2);
         let cell = squares[randomIndex];
 
-        cell.hasDot ? i-- : (cell.hasDot = true);
+        cell.hasStar ? i-- : (cell.hasStar = true);
     }
     return squares;
 };

@@ -58,7 +58,7 @@ export const Board: FunctionComponent = () => {
 
   const renderCells = (squares: ISquare[]): JSX.Element[] => {
     return squares.map((square: ISquare) => (
-      <Cell key={square.x} hasDot={square.hasDot} />
+      <Cell key={square.x} hasStar={square.hasStar} />
     ));
   };
   return (

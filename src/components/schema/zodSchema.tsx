@@ -8,7 +8,7 @@ export const createStarSchema = (maxValue: number) => {
 };
 
 export const createMatrixSchema = (
-  dots: number,
+  stars: number,
   maxSize: number,
   updateFunction: (value: number) => void
 ) =>
@@ -18,7 +18,7 @@ export const createMatrixSchema = (
       .positive("Only positive number")
       .max(maxSize, `Maximum matrix size is ${maxSize}`)
       .transform((value) => {
-        if (value ** 2 < dots) {
+        if (value ** 2 < stars) {
           updateFunction(0);
         }
         return value;

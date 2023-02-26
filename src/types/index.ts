@@ -1,9 +1,9 @@
 export interface IMatrix {
     size: number;
-    dots: number;
+    star: number;
 }
 
 export interface ISquare {
     x?: number;
-    hasDot?: boolean;
+    hasStar?: boolean;
 }
