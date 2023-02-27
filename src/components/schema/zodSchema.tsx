@@ -4,22 +4,20 @@ export const createStarSchema = (maxValue: number) => {
   return z
     .number()
     .nonnegative()
-    .max(maxValue, `Value cannot be bigger than ${maxValue}`);
+    .max(maxValue, `Value cannot be bigger than ${maxValue}}`);
 };
 
 export const createMatrixSchema = (
-  stars: number,
-  maxSize: number,
-  updateFunction: (value: number) => void
+  stars: string,
+  updateFunction: (value: string) => void
 ) =>
   z.object({
     size: z
       .number()
-      .positive("Only positive number")
-      .max(maxSize, `Maximum matrix size is ${maxSize}`)
+      .nonnegative()
       .transform((value) => {
-        if (value ** 2 < stars) {
-          updateFunction(0);
+        if (value ** 2 < parseInt(stars)) {
+          updateFunction("");
         }
         return value;
       }),

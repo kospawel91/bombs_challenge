@@ -9,51 +9,75 @@ import { Cell } from "./Cell";
 import { TextField, Box } from "@mui/material";
 import { createStarSchema, createMatrixSchema } from "./schema/zodSchema";
 import { createBoard } from "./utils/helpers";
-import * as z from "zod";
 
 export const Board: FunctionComponent = () => {
-  const [matrixSize, setMatrixSize] = useState(1);
-  const [stars, setStars] = useState(0);
+  const [matrixSize, setMatrixSize] = useState("");
+  const [stars, setStars] = useState("");
+
   const [matrixErrorMessage, setMatrixErrorMessage] = useState("");
   const [starsErrorMessage, setStarsErrorMessage] = useState("");
 
   useEffect(() => {
     createBoard(matrixSize, stars);
-  }, [matrixSize]);
+  }, [matrixSize, stars]);
 
   const handleSizeChange = () => (e: ChangeEvent<HTMLInputElement>) => {
-    const schema = createMatrixSchema(stars, 20, setStars);
     const value = parseInt(e.target.value, 10);
+    const starsNumber = parseInt(stars, 10);
+
+    const schema = createMatrixSchema(stars, setStars);
     const result = schema.safeParse({ size: value });
+
     if (result.success) {
       const size = result.data.size;
-      if (size * size < stars) {
-        setStars(0);
+
+      if (size ** 2 < starsNumber) {
+        setStars("");
+        setMatrixErrorMessage("");
+        setStarsErrorMessage("");
       }
+
+      setMatrixSize(size.toString());
       setMatrixErrorMessage("");
-      setMatrixSize(size);
-    } else {
-      const error = result.error.errors[0];
-      const errorMessage = error.message;
-      setMatrixErrorMessage(errorMessage);
-    }
-  };
-
-  const handleStarsChange = () => (e: ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-
-    const schema = createStarSchema(matrixSize ** 2);
-
-    const result = schema.safeParse(value);
-
-    if (result.success) {
-      setStars(result.data);
       setStarsErrorMessage("");
     } else {
       const error = result.error.errors[0];
       const errorMessage = error.message;
-      setStarsErrorMessage(errorMessage);
+
+      if (errorMessage.includes("nan")) {
+        setMatrixSize(value.toString());
+        setMatrixErrorMessage("");
+      } else {
+        setMatrixErrorMessage(errorMessage);
+      }
     }
+  };
+
+  const handleStarsChange = () => (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const matrixSizeSquared = parseInt(matrixSize) ** 2;
+    const schema = createStarSchema(matrixSizeSquared);
+    const result = schema.safeParse(parseInt(value));
+    if (!matrixSizeSquared || Number.isNaN(matrixSizeSquared)) {
+      setStars("");
+      setStarsErrorMessage("First create matrix");
+
+      return;
+    }
+
+    if (!result.success) {
+      const errorMessage = result.error.errors[0].message;
+      setStarsErrorMessage(errorMessage);
+      if (errorMessage.includes("nan")) {
+        setStars("");
+        setStarsErrorMessage("");
+      }
+      return;
+    }
+
+    const parsedValue = result.data;
+    setStars(parsedValue.toString());
+    setStarsErrorMessage("");
   };
 
   const renderCells = (squares: ISquare[]): JSX.Element[] => {
@@ -69,7 +93,7 @@ export const Board: FunctionComponent = () => {
         <TextField
           sx={{ m: 4 }}
           id="outlined-number"
-          label="Number"
+          label="Matrix"
           type="number"
           value={matrixSize}
           InputLabelProps={{
@@ -95,6 +119,7 @@ export const Board: FunctionComponent = () => {
         />
         Number of stars {starsErrorMessage && `(${starsErrorMessage})`}
       </Box>
+
       <Box
         sx={{
           display: "grid",

@@ -1,6 +1,6 @@
 export interface IMatrix {
-    size: number;
-    star: number;
+    size: string;
+    star: string;
 }
 
 export interface ISquare {
