@@ -6,4 +6,5 @@ export interface IMatrix {
 export interface ISquare {
     x?: number;
     hasStar?: boolean;
+    length?: number;
 }

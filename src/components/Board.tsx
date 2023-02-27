@@ -3,23 +3,20 @@ import {
   useState,
   useEffect,
   type ChangeEvent,
+  useCallback,
 } from "react";
-import { ISquare } from "../types";
-import { Cell } from "./Cell";
+import debounce from "lodash/debounce";
 import { TextField, Box } from "@mui/material";
 import { createStarSchema, createMatrixSchema } from "./schema/zodSchema";
 import { createBoard } from "./utils/helpers";
-
+import Cell from "./Cell";
 export const Board: FunctionComponent = () => {
   const [matrixSize, setMatrixSize] = useState("");
   const [stars, setStars] = useState("");
 
   const [matrixErrorMessage, setMatrixErrorMessage] = useState("");
   const [starsErrorMessage, setStarsErrorMessage] = useState("");
-
-  useEffect(() => {
-    createBoard(matrixSize, stars);
-  }, [matrixSize, stars]);
+  useEffect(() => {}, [matrixSize, stars]);
 
   const handleSizeChange = () => (e: ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
@@ -27,7 +24,6 @@ export const Board: FunctionComponent = () => {
 
     const schema = createMatrixSchema(stars, setStars);
     const result = schema.safeParse({ size: value });
-
     if (result.success) {
       const size = result.data.size;
 
@@ -80,11 +76,14 @@ export const Board: FunctionComponent = () => {
     setStarsErrorMessage("");
   };
 
-  const renderCells = (squares: ISquare[]): JSX.Element[] => {
-    return squares.map((square: ISquare) => (
-      <Cell key={square.x} hasStar={square.hasStar} />
-    ));
-  };
+  const debouncedInputHandler = useCallback(
+    debounce(() => {
+      createBoard(matrixSize, stars);
+      console.log(createBoard(matrixSize, stars));
+    }, 500),
+    []
+  );
+
   return (
     <Box>
       <Box
@@ -126,11 +125,16 @@ export const Board: FunctionComponent = () => {
           gridTemplateColumns: `repeat(${matrixSize}, 30px)`,
           gridTemplateRows: `repeat(${matrixSize}, 30px)`,
           gap: "1px",
-          justifyContent: "center",
+          justifyContent: "left",
           alignItems: "center",
         }}
       >
-        {renderCells(createBoard(matrixSize, stars))}
+        {matrixSize && matrixSize ? (
+          <Cell data={createBoard(matrixSize, stars)} />
+        ) : (
+          ""
+        )}
+        {/* {renderCells(createBoard(matrixSize, stars))} */}
       </Box>
     </Box>
   );
